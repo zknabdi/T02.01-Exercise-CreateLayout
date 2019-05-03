@@ -16,6 +16,7 @@
 package com.example.android.datafrominternet;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -74,14 +75,36 @@ public class MainActivity extends AppCompatActivity {
         // COMPLETED (2) Call getResponseFromHttpUrl and display the results in mSearchResultsTextView
         // COMPLETED (3) Surround the call to getResponseFromHttpUrl with a try / catch block to catch an IOException
         String githubSearchResults = null;
-        try{
-            githubSearchResults = NetworkUtils.getResponseFromHttpUrl(githubSearchUrl);
+       new GithubQueryTask().execute(githubSearchUrl);
+        // COMPLETED (4) Create a new GithubQueryTask and call its execute method, passing in the url to query
+    }
+    // COMPLETED (1) Create a class called GithubQueryTask that extends AsyncTask<URL, Void, String>
+    // COMPLETED (2) Override the doInBackground method to perform the query. Return the results. (Hint: You've already written the code to perform the query)
+    // COMPLETED (3) Override onPostExecute to display the results in the TextView
+    public class GithubQueryTask extends AsyncTask<URL, Void,String>{
 
-        }catch (IOException e){
-            e.printStackTrace();
+        @Override
+        protected String doInBackground(URL... urls) {
+            URL searchUrl = urls[0];
+            String githubSearchResults = null;
+            try{
+                githubSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+            return githubSearchResults;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if(s!=null && !s.equals("")){
+                mSearchResultsTextView.setText(s);
+            }
         }
     }
-     @Override
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
